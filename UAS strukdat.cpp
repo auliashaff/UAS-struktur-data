@@ -70,56 +70,25 @@ void urutkanJudul() {
     } while (swapped);
     cout << "Playlist berhasil diurutkan berdasarkan judul (A-Z).\n";
 }
-void cariLagu() {
-    if (head == NULL) {
-        cout << "Playlist kosong.\n";
-        return;
-    }
 
-    int pilih;
-    cout << "Cari berdasarkan:\n1. ID\n2. Judul\nPilih: ";
-    cin >> pilih;
-    cin.ignore();
+void urutkanID() {
+    if (head == NULL || head->next == NULL) return;
 
-    Lagu* temp = head;
-    bool ditemukan = false;
-
-    if (pilih == 1) {
-        int idCari;
-        cout << "Masukkan ID lagu: ";
-        cin >> idCari;
-        while (temp != NULL) {
-            if (temp->id == idCari) {
-                ditemukan = true;
-                break;
+    bool swapped;
+    do {
+        swapped = false;
+        Lagu* cur = head;
+        while (cur->next != NULL) {
+            if (cur->id > cur->next->id) {
+                swap(cur->id, cur->next->id);
+                swap(cur->judul, cur->next->judul);
+                swap(cur->artis, cur->next->artis);
+                swap(cur->durasi, cur->next->durasi);
+                swapped = true;
             }
-            temp = temp->next;
+            cur = cur->next;
         }
-    } else if (pilih == 2) {
-        string judulCari;
-        cout << "Masukkan Judul lagu: ";
-        getline(cin, judulCari);
-        while (temp != NULL) {
-            if (temp->judul == judulCari) {
-                ditemukan = true;
-                break;
-            }
-            temp = temp->next;
-        }
-    } else {
-        cout << "Pilihan tidak valid.\n";
-        return;
-    }
-
-    if (ditemukan) {
-        cout << "Ditemukan:\n";
-        cout << "ID: " << temp->id
-             << " | Judul: " << temp->judul
-             << " | Artis: " << temp->artis
-             << " | Durasi: " << temp->durasi << "s\n";
-    } else {
-        cout << "Lagu tidak ditemukan.\n";
-    }
+    } while (swapped);
 }
 
 void mainkanLagu() {
@@ -180,6 +149,82 @@ void hapusLagu() {
     }
     cout << "Lagu dengan ID tersebut tidak ditemukan.\n";
 }
+void cariLagu() {
+    if (head == NULL) {
+        cout << "Playlist kosong.\n";
+        return;
+    }
+
+    int pilih;
+    cout << "Cari berdasarkan:\n1. ID \n2. Judul \nPilih: ";
+    cin >> pilih;
+    cin.ignore();
+
+    if (pilih == 1) {
+        urutkanID();  
+        int n = 0;
+        Lagu* temp = head;
+        while (temp != NULL) {
+            n++;
+            temp = temp->next;
+        }
+        Lagu* arr[n];
+        temp = head;
+        for (int i = 0; i < n; i++) {
+            arr[i] = temp;
+            temp = temp->next;
+        }
+
+        int cariID;
+        cout << "Masukkan ID lagu: ";
+        cin >> cariID;
+        int kiri = 0, kanan = n - 1, mid;
+        bool ditemukan = false;
+
+        while (kiri <= kanan) {
+            mid = (kiri + kanan) / 2;
+            if (arr[mid]->id == cariID) {
+                ditemukan = true;
+                cout << "Ditemukan:\n";
+                cout << "ID: " << arr[mid]->id
+                     << " | Judul: " << arr[mid]->judul
+                     << " | Artis: " << arr[mid]->artis
+                     << " | Durasi: " << arr[mid]->durasi << "s\n";
+                break;
+            } else if (cariID < arr[mid]->id) {
+                kanan = mid - 1;
+            } else {
+                kiri = mid + 1;
+            }
+        }
+
+        if (!ditemukan)
+            cout << "Lagu tidak ditemukan.\n";
+
+    } else if (pilih == 2) {
+        string judulCari;
+        cout << "Masukkan Judul lagu: ";
+        getline(cin, judulCari);
+        Lagu* temp = head;
+        bool ditemukan = false;
+        while (temp != NULL) {
+            if (temp->judul == judulCari) {
+                ditemukan = true;
+                cout << "Ditemukan:\n";
+                cout << "ID: " << temp->id
+                     << " | Judul: " << temp->judul
+                     << " | Artis: " << temp->artis
+                     << " | Durasi: " << temp->durasi << "s\n";
+                break;
+            }
+            temp = temp->next;
+        }
+        if (!ditemukan)
+            cout << "Lagu tidak ditemukan.\n";
+    } else {
+        cout << "Pilihan tidak valid.\n";
+    }
+}
 
 int main() {
     int pilih;
@@ -209,4 +254,3 @@ int main() {
 
     return 0;
 }
-
